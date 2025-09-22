@@ -1,0 +1,5 @@
+{
+  "name": "Copy of Animal Identifier AI",
+  "description": "Upload an image of an animal to identify its species and learn detailed information and fun facts about it, powered by the Gemini API.",
+  "requestFramePermissions": []
+}
