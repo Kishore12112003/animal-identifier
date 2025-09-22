@@ -6,6 +6,7 @@ import ImageUploader from './components/ImageUploader';
 import ResultDisplay from './components/ResultDisplay';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorDisplay from './components/ErrorDisplay';
+import CameraView from './components/CameraView';
 import { LogoIcon, GitHubIcon } from './components/Icons';
 
 const App: React.FC = () => {
@@ -16,6 +17,7 @@ const App: React.FC = () => {
   const [animalData, setAnimalData] = useState<AnimalData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
 
   const fileToGenerativePart = async (file: File) => {
     const base64EncodedDataPromise = new Promise<string>((resolve) => {
@@ -54,12 +56,21 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const handleCapture = useCallback((file: File) => {
+    setIsCameraOpen(false);
+    handleImageUpload(file);
+  }, [handleImageUpload]);
+
   const handleReset = () => {
     setImage({ file: null, previewUrl: null });
     setAnimalData(null);
     setError(null);
     setIsLoading(false);
+    setIsCameraOpen(false);
   };
+
+  const openCamera = () => setIsCameraOpen(true);
+  const closeCamera = () => setIsCameraOpen(false);
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col items-center p-4 sm:p-6 lg:p-8">
@@ -76,8 +87,16 @@ const App: React.FC = () => {
       </header>
 
       <main className="w-full max-w-5xl flex-grow flex flex-col items-center justify-center">
-        {!image.previewUrl && !isLoading && (
-          <ImageUploader onImageUpload={handleImageUpload} isLoading={isLoading} />
+        {!image.previewUrl && !isLoading && !isCameraOpen && (
+          <ImageUploader 
+            onImageUpload={handleImageUpload} 
+            isLoading={isLoading}
+            onOpenCamera={openCamera}
+          />
+        )}
+
+        {isCameraOpen && !isLoading && !image.previewUrl && (
+            <CameraView onCapture={handleCapture} onClose={closeCamera} />
         )}
 
         {isLoading && <LoadingSpinner />}
